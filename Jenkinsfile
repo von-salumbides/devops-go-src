@@ -16,10 +16,10 @@ pipeline {
                 println('Deploying')
                 script {
                     currentBuild.displayName = "mail"
-                    if ( SLS_ACTION == 'run' ) {
+                    if ( MAKEFILE == 'run' ) {
                         sh "make run"
                     } else {
-                        error("Build Failed, ${SLS_ACTION} is not defined")
+                        error("Build Failed, ${MAKEFILE} is not defined")
                     }
                 }
             }
