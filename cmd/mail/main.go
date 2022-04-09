@@ -32,6 +32,7 @@ func main() {
 	smtpHost := os.Getenv("MAIL_HOST")
 	smtpPort := os.Getenv("MAIL_PORT")
 
+	zap.L().Info("", zap.Any("recipient", to))
 	request := Mail{
 		From:    from,
 		To:      to,
