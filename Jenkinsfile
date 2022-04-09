@@ -15,7 +15,7 @@ pipeline {
             steps {
                 println('Deploying')
                 script {
-                    currentBuild.displayName = "${SLS_ACTION}-${FUNCTION_NAME}"
+                    currentBuild.displayName = "mail"
                     if ( SLS_ACTION == 'run' ) {
                         sh "make run"
                     } else {
