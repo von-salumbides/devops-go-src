@@ -20,7 +20,7 @@ type Mail struct {
 
 func main() {
 	logger.InitLogger()
-	config, err := config.ConfigSetup(os.Getenv("ENVIRONMENT"))
+	config, err := config.ConfigSetup(os.Getenv("ENVIRONMENT"), "mail")
 	if err != nil {
 		zap.L().Error("Error loading config file", zap.Any("error", err.Error()))
 		os.Exit(1)

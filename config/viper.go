@@ -13,31 +13,29 @@ type Config struct {
 	vpr *viper.Viper
 }
 
-func ConfigSetup(s string) (*Config, error) {
+func ConfigSetup(env, envPrefix string) (Config, error) {
 	config := Config{}
-	viper.SetConfigName("config")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath(".")
-	viper.AddConfigPath("./config/")
+	vpr := viper.New()
+	vpr.SetConfigName("config")
+	vpr.SetConfigType("yaml")
+	vpr.AddConfigPath(".")
+	vpr.AddConfigPath("./config/")
 
-	err := viper.ReadInConfig()
+	err := vpr.ReadInConfig()
 	if err != nil {
 		zap.L().Error("Error loading config file", zap.Any("error", err.Error()))
 		os.Exit(1)
 	}
 	// Look to see if a specific environment is configured
-	if s == "" {
-		s = "default"
+	if env == "" {
+		env = "default"
 	}
-	err = viper.Unmarshal(&config)
-	if err != nil {
-		zap.L().Error("Error Unmarshalling environment variables", zap.Any("error", err.Error()))
-		os.Exit(1)
-	}
-	config.vpr = viper.Sub(s)
+
+	config.vpr = vpr.Sub(env)
+	config.vpr.SetEnvPrefix(envPrefix)
 	config.vpr.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	config.vpr.AutomaticEnv()
-	return &config, nil
+	return config, nil
 }
 
 func (cfg *Config) GetString(k string) string {
