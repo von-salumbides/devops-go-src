@@ -8,7 +8,7 @@ pipeline {
         GOOS = 'linux'
         GOARCH = 'amd64'
         CGO_ENABLED = '0' 
-        MAIL_PASSWORD = secrets("MAIL_PASSWORD")
+        MAIL_PASSWORD = credentials("MAIL_PASSWORD")
     }
     stages {
         stage('Deploy'){
