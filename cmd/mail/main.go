@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/von-salumbides/devops-go-src/config"
 	"github.com/von-salumbides/devops-go-src/utils/logger"
 	"go.uber.org/zap"
 )
@@ -19,23 +20,17 @@ type Mail struct {
 
 func main() {
 	logger.InitLogger()
-	// Sender data.
-	from := os.Getenv("MAIL_FROM")
-	// Receiver email address.
-	mailTo := os.Getenv("MAIL_TO")
-	toSlice := strings.Split(mailTo, ",")
-	to := toSlice
-	// Password
-	password := os.Getenv("MAIL_PASSWORD")
-	// Body - message to provide
-	body := "This is a test email message."
-	// Subject
-	subject := os.Getenv("MAIL_SUBJECT")
-	// smtp server configuration.
-	smtpHost := os.Getenv("MAIL_HOST")
-	smtpPort := os.Getenv("MAIL_PORT")
+	config, _ := config.ConfigSetup(os.Getenv("ENVIRONMENT"))
 
-	zap.L().Info("", zap.Any("recipient", to))
+	// Mail config
+	mailToSlice := strings.Split(config.GetString("mail.MAIL_TO"), ",")
+	to := mailToSlice
+	from := config.GetString("mail.MAIL_FROM")
+	password := config.GetString("mail.MAIL_PASSWORD")
+	subject := config.GetString("mail.MAIL_SUBJECT")
+	smtpHost := config.GetString("mail.MAIL_HOST")
+	smtpPort := config.GetString("mail.MAIL_PORT")
+	body := "This is a test email message."
 	request := Mail{
 		From:    from,
 		To:      to,
@@ -43,10 +38,8 @@ func main() {
 		Subject: subject,
 	}
 	msg := BuildMessage(request)
-
 	// Authentication.
 	auth := smtp.PlainAuth("", from, password, smtpHost)
-
 	// Sending email.
 	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, to, []byte(msg))
 	if err != nil {
