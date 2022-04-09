@@ -23,8 +23,9 @@ func main() {
 	from := os.Getenv("MAIL_FROM")
 	// Receiver email address.
 	mailTo := os.Getenv("MAIL_TO")
-	toSplit := strings.Split(mailTo, ",")
-	to := toSplit
+	toSlice := strings.Split(mailTo, ",")
+	to := toSlice
+	// Password
 	password := os.Getenv("MAIL_PASSWORD")
 	// Body - message to provide
 	body := "This is a test email message."
