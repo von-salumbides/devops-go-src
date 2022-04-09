@@ -8,20 +8,9 @@ pipeline {
         GOOS = 'linux'
         GOARCH = 'amd64'
         CGO_ENABLED = '0' 
+        MAIL_PASSWORD = secrets("MAIL_PASSWORD")
     }
     stages {
-        stage('Switch Environment') {
-            steps {
-                script {
-                    switch(DEPLOY_ENV) {
-                        case "dev":
-                            AWS_ROLE = ""
-                        break
-                            error("Build Failed for ${DEPLOY_ENV}. No match found.")
-                    }
-                }
-            }
-        }
         stage('Deploy'){
             steps {
                 println('Deploying')
