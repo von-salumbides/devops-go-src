@@ -15,6 +15,7 @@ pipeline {
             steps {
                 println('Deploying')
                 script {
+                    echo "${MAIL_TO}"
                     currentBuild.displayName = "mail"
                     if ( MAKEFILE == 'run' ) {
                         sh "make run"
