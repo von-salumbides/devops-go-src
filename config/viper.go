@@ -19,7 +19,6 @@ func ConfigSetup(s string) (*Config, error) {
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("./config/")
-	viper.AutomaticEnv()
 
 	err := viper.ReadInConfig()
 	if err != nil {
@@ -29,6 +28,11 @@ func ConfigSetup(s string) (*Config, error) {
 	// Look to see if a specific environment is configured
 	if s == "" {
 		s = "default"
+	}
+	err = viper.Unmarshal(&config)
+	if err != nil {
+		zap.L().Error("Error Unmarshalling environment variables", zap.Any("error", err.Error()))
+		os.Exit(1)
 	}
 	config.vpr = viper.Sub(s)
 	config.vpr.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
