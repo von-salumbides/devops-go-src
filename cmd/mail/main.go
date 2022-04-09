@@ -12,41 +12,47 @@ import (
 )
 
 type Mail struct {
-	From    string
-	To      []string
-	Subject string
-	Body    string
+	From     string
+	To       []string
+	Subject  string
+	Body     string
+	Password string
+	Host     string
+	Port     string
 }
-
-var yaml []byte
 
 func main() {
 	logger.InitLogger()
-	config, err := config.ConfigSetup(os.Getenv("ENVIRONMENT"), "devops")
+	config, err := config.ConfigSetup(os.Getenv("ENVIRONMENT"), "mail")
 	if err != nil {
 		zap.L().Error("Error loading config file", zap.Any("error", err.Error()))
 		os.Exit(1)
 	}
 	// Mail config
-	mailToSlice := strings.Split(config.GetString("mail.TO"), ",")
-	to := mailToSlice
-	from := config.GetString("mail.FROM")
-	password := config.GetString("mail.PASSWORD")
-	subject := config.GetString("mail.SUBJECT")
-	smtpHost := config.GetString("mail.HOST")
-	smtpPort := config.GetString("mail.PORT")
+	// TODO: Change to template
 	body := "This is a test email message."
+
 	request := Mail{
-		From:    from,
-		To:      to,
-		Body:    body,
-		Subject: subject,
+		From:     config.GetString("mail.FROM"),
+		To:       strings.Split(config.GetString("mail.TO"), ","),
+		Subject:  config.GetString("mail.SUBJECT"),
+		Password: config.GetString("mail.PASSWORD"),
+		Host:     config.GetString("mail.HOST"),
+		Port:     config.GetString("mail.PORT"),
+		Body:     body,
 	}
 	msg := BuildMessage(request)
 	// Authentication.
-	auth := smtp.PlainAuth("", from, password, smtpHost)
+	auth := smtp.PlainAuth("",
+		request.From,
+		request.Password,
+		request.Host)
 	// Sending email.
-	err = smtp.SendMail(smtpHost+":"+smtpPort, auth, from, to, []byte(msg))
+	err = smtp.SendMail(request.Host+":"+request.Port,
+		auth,
+		request.From,
+		request.To,
+		[]byte(msg))
 	if err != nil {
 		zap.L().Error("Failed to send email", zap.Any("error", err.Error()))
 		return
