@@ -20,8 +20,11 @@ type Mail struct {
 
 func main() {
 	logger.InitLogger()
-	config, _ := config.ConfigSetup(os.Getenv("ENVIRONMENT"))
-
+	config, err := config.ConfigSetup(os.Getenv("ENVIRONMENT"))
+	if err != nil {
+		zap.L().Error("Error loading config file", zap.Any("error", err.Error()))
+		os.Exit(1)
+	}
 	// Mail config
 	mailToSlice := strings.Split(config.GetString("mail.MAIL_TO"), ",")
 	to := mailToSlice
@@ -41,7 +44,7 @@ func main() {
 	// Authentication.
 	auth := smtp.PlainAuth("", from, password, smtpHost)
 	// Sending email.
-	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, to, []byte(msg))
+	err = smtp.SendMail(smtpHost+":"+smtpPort, auth, from, to, []byte(msg))
 	if err != nil {
 		zap.L().Error("Failed to send email", zap.Any("error", err.Error()))
 		return
