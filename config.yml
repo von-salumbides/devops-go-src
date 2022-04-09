@@ -1,8 +1,8 @@
 default: &default
   mail:
-    MAIL_FROM: ""
-    MAIL_TO: ""
-    MAIL_PASSWORD: ""
-    MAIL_SUBJECT: ""
-    MAIL_HOST: ""
-    MAIL_PORT: ""
+    FROM: ""
+    TO: ""
+    PASSWORD: ""
+    SUBJECT: ""
+    HOST: ""
+    PORT: ""

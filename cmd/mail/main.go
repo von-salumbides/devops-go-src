@@ -18,6 +18,8 @@ type Mail struct {
 	Body    string
 }
 
+var yaml []byte
+
 func main() {
 	logger.InitLogger()
 	config, err := config.ConfigSetup(os.Getenv("ENVIRONMENT"), "mail")
@@ -26,13 +28,13 @@ func main() {
 		os.Exit(1)
 	}
 	// Mail config
-	mailToSlice := strings.Split(config.GetString("mail.MAIL_TO"), ",")
+	mailToSlice := strings.Split(config.GetString("mail.TO"), ",")
 	to := mailToSlice
-	from := config.GetString("mail.MAIL_FROM")
-	password := config.GetString("mail.MAIL_PASSWORD")
-	subject := config.GetString("mail.MAIL_SUBJECT")
-	smtpHost := config.GetString("mail.MAIL_HOST")
-	smtpPort := config.GetString("mail.MAIL_PORT")
+	from := config.GetString("mail.FROM")
+	password := config.GetString("mail.PASSWORD")
+	subject := config.GetString("mail.SUBJECT")
+	smtpHost := config.GetString("mail.HOST")
+	smtpPort := config.GetString("mail.PORT")
 	body := "This is a test email message."
 	request := Mail{
 		From:    from,
