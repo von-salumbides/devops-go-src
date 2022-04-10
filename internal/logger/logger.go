@@ -14,3 +14,11 @@ func InitLogger() {
 	zap.ReplaceGlobals(l)
 	defer l.Sync()
 }
+
+func INFO(msg string) {
+	zap.L().Info(msg)
+}
+
+func ERROR(msg, err string) {
+	zap.L().Error(msg, zap.Any("error", err))
+}

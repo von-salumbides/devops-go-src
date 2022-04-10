@@ -6,9 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/von-salumbides/devops-go-src/config"
-	"github.com/von-salumbides/devops-go-src/utils/logger"
-	"go.uber.org/zap"
+	"github.com/von-salumbides/devops-go-src/configs"
+	"github.com/von-salumbides/devops-go-src/internal/logger"
 )
 
 type Mail struct {
@@ -23,9 +22,9 @@ type Mail struct {
 
 func main() {
 	logger.InitLogger()
-	config, err := config.ConfigSetup(os.Getenv("ENVIRONMENT"), "devops")
+	config, err := configs.ConfigSetup(os.Getenv("ENVIRONMENT"), "MAIL")
 	if err != nil {
-		zap.L().Error("Error loading config file", zap.Any("error", err.Error()))
+		logger.ERROR("Error loading config file", err.Error())
 		os.Exit(1)
 	}
 	// Mail config
@@ -54,10 +53,10 @@ func main() {
 		request.To,
 		[]byte(msg))
 	if err != nil {
-		zap.L().Error("Failed to send email", zap.Any("error", err.Error()))
+		logger.ERROR("Failed to send email", err.Error())
 		return
 	}
-	zap.L().Info("Email Sent Successfully!")
+	logger.INFO("Email Sent Successfully!")
 }
 
 func BuildMessage(mail Mail) string {
