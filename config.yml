@@ -1,8 +1,10 @@
 default: &default
   mail:
-    FROM: ""
-    TO: ""
-    PASSWORD: ""
-    SUBJECT: ""
-    HOST: ""
-    PORT: ""
+    FROM: 
+    TO: 
+    PASSWORD: 
+    SUBJECT: 
+    HOST: "smtp.gmail.com"
+    PORT: "587"
+    MESSAGE: 
+    ENVIRONMENT: 

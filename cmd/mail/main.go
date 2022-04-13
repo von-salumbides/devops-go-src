@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"html/template"
 	"net/smtp"
 	"os"
 	"strings"
@@ -11,13 +13,19 @@ import (
 )
 
 type Mail struct {
-	From     string
-	To       []string
-	Subject  string
-	Body     string
-	Password string
-	Host     string
-	Port     string
+	From     string   `json:"from"`
+	To       []string `json:"to"`
+	Subject  string   `json:"subject"`
+	Password string   `json:"password"`
+	Host     string   `json:"host"`
+	Port     string   `json:"port"`
+	Message  string   `json:"message"`
+	Body     bytes.Buffer
+}
+
+type DataTemplate struct {
+	Message     string
+	Environment string
 }
 
 func main() {
@@ -29,8 +37,17 @@ func main() {
 	}
 	// Mail config
 	// TODO: Change to template
-	body := "This is a test email message."
-
+	var tmplBody bytes.Buffer
+	tmpl := template.Must(template.ParseFiles("cmd/mail/mail.tmpl"))
+	data := DataTemplate{
+		Message:     config.GetString("mail.MESSAGE"),
+		Environment: config.GetString("mail.ENVIRONMENT"),
+	}
+	err = tmpl.Execute(&tmplBody, data)
+	if err != nil {
+		logger.ERROR("Error loading template file", err.Error())
+		os.Exit(1)
+	}
 	request := Mail{
 		From:     config.GetString("mail.FROM"),
 		To:       strings.Split(config.GetString("mail.TO"), ","),
@@ -38,7 +55,7 @@ func main() {
 		Password: config.GetString("mail.PASSWORD"),
 		Host:     config.GetString("mail.HOST"),
 		Port:     config.GetString("mail.PORT"),
-		Body:     body,
+		Body:     tmplBody,
 	}
 	msg := BuildMessage(request)
 	// Authentication.
@@ -64,7 +81,7 @@ func BuildMessage(mail Mail) string {
 	msg += fmt.Sprintf("From: %s\r\n", mail.From)
 	msg += fmt.Sprintf("To: %s\r\n", strings.Join(mail.To, ";"))
 	msg += fmt.Sprintf("Subject: %s\r\n", mail.Subject)
-	msg += fmt.Sprintf("\r\n%s\r\n", mail.Body)
+	msg += fmt.Sprintf("\r\n%s\r\n", mail.Body.String())
 
 	return msg
 }

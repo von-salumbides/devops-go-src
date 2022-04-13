@@ -1,7 +1,7 @@
 package configs
 
 import (
-	_ "embed" //pkg.go.dev/embed
+	// _ "embed" //pkg.go.dev/embed
 	"os"
 	"strings"
 
